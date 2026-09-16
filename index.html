@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serto Phone - Release Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d0e;
+      --card-bg: #14171a;
+      --border: #22272b;
+      --text: #9ca3af;
+      --text-white: #f3f4f6;
+      --accent: #00d26a; /* FiveM / CodeM tarzı neon yeşil */
+      --accent-dim: rgba(0, 210, 106, 0.12);
+      --sidebar-w: 220px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* Üst Navigasyon */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 32px;
+      background: rgba(11, 13, 14, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      font-weight: 700;
+      color: var(--text-white);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-tag {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Ana İki Kolonlu Düzen */
+    .layout-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--sidebar-w);
+      gap: 40px;
+      padding: 40px 32px 100px;
+    }
+
+    /* ORTA ALAN: Release Notları */
+    .content-area {
+      min-width: 0;
+    }
+
+    .release-section {
+      padding-bottom: 80px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 80px;
+    }
+    .release-section:last-child {
+      border-bottom: none;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary { background: var(--accent-dim); color: var(--accent); }
+    .badge-gray { background: #1f2428; color: #8b949e; }
+
+    .release-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 8px;
+    }
+    .release-subtitle {
+      font-size: 1rem;
+      color: #8b949e;
+      margin-bottom: 24px;
+    }
+
+    /* Görsel Çerçevesi */
+    .preview-card {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #000;
+      overflow: hidden;
+      margin: 24px 0 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .preview-card img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    .section-heading {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-white);
+      margin: 28px 0 12px;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .feature-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .feature-list li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: var(--accent);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* SAĞ ALAN: Releases Navigasyonu */
+    .toc-sidebar {
+      position: sticky;
+      top: 90px;
+      height: fit-content;
+    }
+    .toc-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .toc-list {
+      list-style: none;
+      border-left: 1px solid var(--border);
+    }
+    .toc-list a {
+      display: block;
+      padding: 6px 0 6px 14px;
+      color: #8b949e;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.15s ease, border-left-color 0.15s ease;
+      margin-left: -1px;
+      border-left: 1px solid transparent;
+    }
+    .toc-list a:hover {
+      color: var(--text-white);
+    }
+    .toc-list a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    @media (max-width: 850px) {
+      .layout-container { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Üst Bar -->
+  <header>
+    <div class="brand">
+      📱 Serto Phone
+      <span class="brand-tag">Docs</span>
+    </div>
+    <div style="font-size: 0.85rem; color: #8b949e;">v0.2.0-beta</div>
+  </header>
+
+  <div class="layout-container">
+    
+    <!-- ORTA KISIM: Release İçerikleri -->
+    <main class="content-area">
+      
+      <!-- Sürüm: v0.2.0 -->
+      <section id="v0-2-0" class="release-section">
+        <div class="badges">
+          <span class="badge badge-primary">Latest Release</span>
+          <span class="badge badge-gray">Update</span>
+        </div>
+        <h1 class="release-title">v0.2.0 - Arayüz ve Arama Sistemi</h1>
+        <p class="release-subtitle">Telefon arayüzü, rehber ve gerçek zamanlı sesli iletişim prototipi tamamlandı.</p>
+
+        <!-- Önizleme Görsel Alanı (Kendi resminizin linkini src içine koyabilirsiniz) -->
+        <div class="preview-card">
+          <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&w=1200&q=80" alt="Serto Phone v0.2.0 Arayüz">
+        </div>
+
+        <h3 class="section-heading">Eklenen Özellikler</h3>
+        <ul class="feature-list">
+          <li><strong>Modern UI Tasarımı:</strong> Akıcı animasyonlar ve koyu tema entegrasyonu sağlandı.</li>
+          <li><strong>Kişiler (Rehber):</strong> Yeni kişi ekleme, numara engelleme ve arama geçmişi modülü eklendi.</li>
+          <li><strong>Hızlı Arama:</strong> WebRTC tabanlı ses protokolü altyapısı hazırlandı.</li>
+        </ul>
+
+        <h3 class="section-heading">Düzeltmeler</h3>
+        <ul class="feature-list">
+          <li>Arama esnasında ekran yönünün kilitlenmesi sorunu giderildi.</li>
+          <li>Gereksiz bellek kullanımı optimize edildi.</li>
+        </ul>
+      </section>
+
+      <!-- Sürüm: v0.1.0 -->
+      <section id="v0-1-0" class="release-section">
+        <div class="badges">
+          <span class="badge badge-gray">Initial</span>
+        </div>
+        <h1 class="release-title">v0.1.0 - Altyapı Kurulumu</h1>
+        <p class="release-subtitle">Projenin çekirdek mimarisinin atıldığı ilk sürüm.</p>
+
+        <h3 class="section-heading">Geliştirmeler</h3>
+        <ul class="feature-list">
+          <li>GitHub dokümantasyon sayfası yapılandırıldı.</li>
+          <li>Discord otomatik webhook bildirim sistemi aktif edildi.</li>
+          <li>Temel konfigürasyon dosyaları oluşturuldu.</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <!-- SAĞ KISIM: On This Page / Releases Sıralaması -->
+    <aside class="toc-sidebar">
+      <div class="toc-title">
+        <span>≡</span> RELEASES
+      </div>
+      <nav class="toc-list" id="toc">
+        <a href="#v0-2-0" class="active">v0.2.0 (Latest)</a>
+        <a href="#v0-1-0">v0.1.0 (Initial)</a>
+      </nav>
+    </aside>
+
+  </div>
+
+  <!-- Kaydırdıkça sağdaki menüyü parlatan script -->
+  <script>
+    const sections = document.querySelectorAll('.release-section');
+    const navLinks = document.querySelectorAll('.toc-list a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (pageYOffset >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
