@@ -21,57 +21,39 @@ jobs:
               return;
             }
 
-            const rawBody = release.body || "";
-
-            // 1. Görsel URL'sini yakala
-            const assetRegex = /https:\/\/github\.com\/user-attachments\/assets\/[a-zA-Z0-9-]+/i;
-            const standardImgRegex = /https?:\/\/[^\s)]+\.(png|jpg|jpeg|webp|gif)/i;
-            const foundImage = rawBody.match(assetRegex) || rawBody.match(standardImgRegex);
-            const imageUrl = foundImage ? foundImage[0] : null;
-
-            // 2. Metindeki ham <img> ve markdown resim etiketlerini temizle
-            let cleanBody = rawBody
+            // Metni al ve görsel etiketlerini temizle
+            let body = (release.body || "")
               .replace(/<img[^>]*>/gi, "")
               .replace(/!\[.*?\]\(.*?\)/gi, "")
               .trim();
 
-            // Discord embed açıklama sınırı: 2000 karakter (güvenli limit: 1800)
-            if (cleanBody.length > 1800) {
-              cleanBody = cleanBody.substring(0, 1800) + "\n\n... *(Devamı GitHub Release sayfasında)*";
-            }
-
-            const embed = {
-              title: release.name || release.tag_name,
-              url: release.html_url,
-              color: 65386,
-              description: cleanBody,
-              fields: [
-                { name: "🏷️ Sürüm", value: `\`${release.tag_name}\``, inline: true },
-                { name: "👤 Geliştirici", value: context.actor, inline: true }
-              ],
-              footer: {
-                text: "Serto Phone Development • Lore-Friendly Ecosystem",
-                icon_url: context.payload.sender.avatar_url
-              }
-            };
-
-            if (imageUrl) {
-              embed.image = { url: imageUrl };
+            // Sadece ilk 500 karakteri al
+            if (body.length > 500) {
+              body = body.substring(0, 500) + "\n\n... *(Devamı GitHub Release sayfasında)*";
             }
 
             const payload = {
               username: "Serto Phone Updates",
               avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-              embeds: [embed]
+              embeds: [
+                {
+                  title: release.name || release.tag_name,
+                  url: release.html_url,
+                  color: 65386,
+                  description: body || "Yeni sürüm yayınlandı!",
+                  fields: [
+                    { name: "🏷️ Sürüm", value: `\`${release.tag_name}\``, inline: true },
+                    { name: "👤 Geliştirici", value: context.actor, inline: true }
+                  ],
+                  footer: {
+                    text: "Serto Phone Development • Lore-Friendly Ecosystem"
+                  }
+                }
+              ]
             };
 
-            const response = await fetch(webhookUrl, {
+            await fetch(webhookUrl, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(payload)
             });
-
-            if (!response.ok) {
-              const errText = await response.text();
-              core.setFailed(`Discord API Hatası (${response.status}): ${errText}`);
-            }
