@@ -5,7 +5,6 @@
 **Metadata-driven, unique props & UIs, and 100% Lore-Friendly phone system designed for FiveM / GTA V.**  
 *FiveM / GTA V ekosistemi için metadata odaklı, benzersiz prop/UI varyasyonlarına sahip ve %100 Lore-Friendly telefon sistemi.*
 
-[![Website Status](https://img.shields.io/badge/Website-Live-00d26a?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sertoaluns.github.io/serto_phone_doc/)
 [![Stage](https://img.shields.io/badge/Stage-Concept_%26_Design-orange?style=for-the-badge)](#)
 [![DMCA Safe](https://img.shields.io/badge/Rockstar_DMCA-%25100_Safe-green?style=for-the-badge)](#)
 
