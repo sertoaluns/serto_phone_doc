@@ -2,54 +2,58 @@ name: Discord Release Announcement
 
 on:
   release:
-    types: [published]
+    types: [published, edited]
 
 jobs:
   discord-notify:
     runs-on: ubuntu-latest
     steps:
       - name: Send Release Embed to Discord
-        run: |
-          BODY_TEXT=$(echo "${{ github.event.release.body }}" | head -c 1800 | jq -sRr @json)
-          RELEASE_TITLE=$(echo "${{ github.event.release.name }}" | jq -sRr @json)
-          TAG_NAME="${{ github.event.release.tag_name }}"
-          RELEASE_URL="${{ github.event.release.html_url }}"
-          AUTHOR_NAME="${{ github.actor }}"
-          AUTHOR_ICON="${{ github.event.sender.avatar_url }}"
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          script: |
+            const release = context.payload.release;
+            const webhookUrl = process.env.DISCORD_WEBHOOK;
+            if (!webhookUrl) {
+              core.setFailed("DISCORD_WEBHOOK secret bulunamadı!");
+              return;
+            }
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "username": "Serto Phone Updates",
-            "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-            "embeds": [
-              {
-                "title": $RELEASE_TITLE,
-                "url": "$RELEASE_URL",
-                "color": 65386,
-                "description": $BODY_TEXT,
-                "fields": [
-                  {
-                    "name": "🏷️ Sürüm",
-                    "value": "\`$TAG_NAME\`",
-                    "inline": true
-                  },
-                  {
-                    "name": "👤 Geliştirici",
-                    "value": "$AUTHOR_NAME",
-                    "inline": true
+            // Metni al ve görsel etiketlerini temizle
+            let body = (release.body || "")
+              .replace(/<img[^>]*>/gi, "")
+              .replace(/!\[.*?\]\(.*?\)/gi, "")
+              .trim();
+
+            // İlk 500 karakteri sınırla
+            if (body.length > 500) {
+              body = body.substring(0, 500) + "\n\n... (Devamı GitHub Release sayfasında)";
+            }
+
+            const payload = {
+              username: "Serto Phone Updates",
+              avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              embeds: [
+                {
+                  title: release.name || release.tag_name,
+                  url: release.html_url,
+                  color: 65386,
+                  description: body || "Yeni sürüm yayınlandı.",
+                  fields: [
+                    { name: "Sürüm", value: `\`${release.tag_name}\``, inline: true },
+                    { name: "Geliştirici", value: context.actor, inline: true }
+                  ],
+                  footer: {
+                    text: "Serto Phone Development • Lore-Friendly Ecosystem"
                   }
-                ],
-                "footer": {
-                  "text": "Serto Phone Development • Lore-Friendly Ecosystem",
-                  "icon_url": "$AUTHOR_ICON"
                 }
-              }
-            ]
-          }
-          EOF
-          )
+              ]
+            };
 
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "$PAYLOAD" \
-               ${{ secrets.DISCORD_WEBHOOK }}
+            await fetch(webhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
