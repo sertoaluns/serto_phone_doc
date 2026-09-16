@@ -10,12 +10,29 @@ jobs:
     steps:
       - name: Send Release Embed to Discord
         run: |
-          BODY_TEXT=$(echo "${{ github.event.release.body }}" | head -c 1800 | jq -sRr @json)
+          RAW_BODY="${{ github.event.release.body }}"
+
+          # Metin içindeki ilk resim linkini (HTML veya Markdown) çek
+          IMG_URL=$(echo "$RAW_BODY" | grep -o -E 'https://github\.com/user-attachments/assets/[a-zA-Z0-9-]+' | head -n 1)
+
+          # Eğer resim bulunamazsa normal görsel formatlarını ara
+          if [ -z "$IMG_URL" ]; then
+            IMG_URL=$(echo "$RAW_BODY" | grep -o -E 'https?://[^ ]+\.(png|jpg|jpeg|gif|webp)' | head -n 1)
+          fi
+
+          # Metin içindeki ham <img ... /> etiketlerini temizle
+          CLEAN_BODY=$(echo "$RAW_BODY" | sed -E 's/<img[^>]*src="([^"]*)"[^>]*>/ /g' | sed -E 's/!\[.*?\]\(.*?\)/ /g' | head -c 1800 | jq -sRr @json)
           RELEASE_TITLE=$(echo "${{ github.event.release.name }}" | jq -sRr @json)
           TAG_NAME="${{ github.event.release.tag_name }}"
           RELEASE_URL="${{ github.event.release.html_url }}"
           AUTHOR_NAME="${{ github.actor }}"
           AUTHOR_ICON="${{ github.event.sender.avatar_url }}"
+
+          # Resim varsa image objesini hazırla
+          IMAGE_PAYLOAD=""
+          if [ -n "$IMG_URL" ]; then
+            IMAGE_PAYLOAD="\"image\": { \"url\": \"$IMG_URL\" },"
+          fi
 
           PAYLOAD=$(cat <<EOF
           {
@@ -26,7 +43,8 @@ jobs:
                 "title": $RELEASE_TITLE,
                 "url": "$RELEASE_URL",
                 "color": 65386,
-                "description": $BODY_TEXT,
+                "description": $CLEAN_BODY,
+                $IMAGE_PAYLOAD
                 "fields": [
                   {
                     "name": "🏷️ Sürüm",
